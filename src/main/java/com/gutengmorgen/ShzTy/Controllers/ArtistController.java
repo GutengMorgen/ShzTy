@@ -3,6 +3,7 @@ package com.gutengmorgen.ShzTy.Controllers;
 import com.gutengmorgen.ShzTy.Entities.Artists.Artist;
 import com.gutengmorgen.ShzTy.Entities.Artists.ArtistServices;
 import com.gutengmorgen.ShzTy.Entities.Artists.DtoArtists.DtoCreateArtist;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +32,7 @@ public class ArtistController {
     }
 
     @PostMapping
-    public ResponseEntity<Artist> create(@RequestBody DtoCreateArtist dtoCreateArtist) {
+    public ResponseEntity<Artist> create(@Valid @RequestBody DtoCreateArtist dtoCreateArtist) {
         Artist addedArtist = services.addArtist(dtoCreateArtist);
         return new ResponseEntity<>(addedArtist, HttpStatus.CREATED);
     }

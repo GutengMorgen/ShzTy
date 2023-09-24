@@ -2,15 +2,14 @@ package com.gutengmorgen.ShzTy.Entities.Artists;
 
 import com.gutengmorgen.ShzTy.Entities.Artists.DtoArtists.DtoCreateArtist;
 import com.gutengmorgen.ShzTy.Entities.Genres.Genre;
+import com.gutengmorgen.ShzTy.Infra.Errors.GenreNotFoundException;
 import com.gutengmorgen.ShzTy.Repositories.ArtistRepo;
 import com.gutengmorgen.ShzTy.Repositories.GenreRepo;
 import jakarta.annotation.Resource;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ArtistServiceImpl implements ArtistServices{
@@ -29,13 +28,14 @@ public class ArtistServiceImpl implements ArtistServices{
 //            throw new IllegalStateException("Artist already exists");
 //        }
         for (Long genreID : dto.GenreIDs()) {
-            Genre genre = genreRepository.findById(genreID).orElse(null);
-            if (genre != null) {
-                artist.addGenre(genre);
-                genre.getArtists().add(artist);
-                genreRepository.save(genre);
-                artistRepository.save(artist);
-            }
+            Genre genre = genreRepository.findById(genreID).orElseThrow(
+                    () -> new GenreNotFoundException("'Genre with id %d not found'".formatted(genreID))
+            );
+
+            artist.addGenre(genre);
+            genre.getArtists().add(artist);
+            genreRepository.save(genre);
+            artistRepository.save(artist);
 
 
 //            if (genreOptional.isPresent()) {
