@@ -23,6 +23,7 @@ public class Artist {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_artists")
     private Long Id;
+    @Column(name = "name", unique = true)
     private String Name;
     private Date BornDate;
     private String Gender;
