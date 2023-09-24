@@ -2,9 +2,13 @@ package com.gutengmorgen.ShzTy.Entities.Artists;
 
 import com.gutengmorgen.ShzTy.Entities.Artists.DtoArtists.DtoCreateArtist;
 import com.gutengmorgen.ShzTy.Entities.Genres.Genre;
+import com.gutengmorgen.ShzTy.Entities.Languages.Language;
+import com.gutengmorgen.ShzTy.Infra.Errors.DuplicateArtistException;
 import com.gutengmorgen.ShzTy.Infra.Errors.GenreNotFoundException;
+import com.gutengmorgen.ShzTy.Infra.Errors.LanguageNotFoundException;
 import com.gutengmorgen.ShzTy.Repositories.ArtistRepo;
 import com.gutengmorgen.ShzTy.Repositories.GenreRepo;
+import com.gutengmorgen.ShzTy.Repositories.LanguageRepo;
 import jakarta.annotation.Resource;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -18,15 +22,30 @@ public class ArtistServiceImpl implements ArtistServices{
     private ArtistRepo artistRepository;
     @Resource
     private GenreRepo genreRepository;
+    @Resource
+    private LanguageRepo languageRepository;
 
-    @Transactional
+    @Transactional(rollbackOn = Exception.class)
     @Override
     public Artist addArtist(DtoCreateArtist dto) {
         Artist artist = new Artist(dto);
-//        Optional<Artist> artistOptional = artistRepository.findByName(artist.getName());
-//        if (artistOptional.isPresent()) {
-//            throw new IllegalStateException("Artist already exists");
-//        }
+
+        boolean artistExists = artistRepository.existsByName(dto.Name());
+        if (artistExists) {
+            throw new DuplicateArtistException("'Artist with name %s already exists'".formatted(dto.Name()));
+        }
+
+        for (Long languageID : dto.LanguageIDs()){
+            Language language = languageRepository.findById(languageID).orElseThrow(
+                    () -> new LanguageNotFoundException("'Language with id %d not found'".formatted(languageID))
+            );
+
+            artist.addLanguage(language);
+            language.getArtists().add(artist);
+            languageRepository.save(language);
+
+        }
+
         for (Long genreID : dto.GenreIDs()) {
             Genre genre = genreRepository.findById(genreID).orElseThrow(
                     () -> new GenreNotFoundException("'Genre with id %d not found'".formatted(genreID))
@@ -35,18 +54,9 @@ public class ArtistServiceImpl implements ArtistServices{
             artist.addGenre(genre);
             genre.getArtists().add(artist);
             genreRepository.save(genre);
-            artistRepository.save(artist);
-
-
-//            if (genreOptional.isPresent()) {
-//                artist.addGenre(genreOptional.get());
-//                genreOptional.get().getArtists().add(artist);
-//                genreRepository.save(genreOptional.get());
-//                artistRepository.save(artist);
-//            }
-//            else
-//                throw new IllegalStateException("Genre does not exist");
         }
+
+        artistRepository.save(artist);
         return artist;
     }
 
@@ -69,25 +79,4 @@ public class ArtistServiceImpl implements ArtistServices{
     public String deleteArtist(Long id) {
         return null;
     }
-
-//    private void mapDtoToArtist(DtoCreateArtist dtoCreateArtist, Artist artist) {
-//        artist.setName(dtoCreateArtist.Name());
-//        dtoCreateArtist.genre().stream().forEach(genreID -> {
-//            Genre genre = genreRepository.findById(genreID).orElse(null);
-//            if (null == genre) {
-//                genre = new Genre();
-//                genre.setArtists(new HashSet<>());
-//            }
-//            genre.setId(genreID);
-//            artist.addGenre(genre);
-//        });
-//    }
-
-//    private DtoCreateArtist mapEntityToDto(Artist artist) {
-//        DtoCreateArtist responseDto = new DtoCreateArtist();
-//        responseDto.setName(student.getName());
-//        responseDto.setId(student.getId());
-//        responseDto.setCourses(student.getCourses().stream().map(Course::getName).collect(Collectors.toSet()));
-//        return responseDto;
-//    }
 }

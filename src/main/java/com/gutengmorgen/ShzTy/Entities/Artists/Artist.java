@@ -2,6 +2,7 @@ package com.gutengmorgen.ShzTy.Entities.Artists;
 
 import com.gutengmorgen.ShzTy.Entities.Artists.DtoArtists.DtoCreateArtist;
 import com.gutengmorgen.ShzTy.Entities.Genres.Genre;
+import com.gutengmorgen.ShzTy.Entities.Languages.Language;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,15 +23,21 @@ public class Artist {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_artists")
-    private Long Id;
-    @Column(name = "name", unique = true)
-    private String Name;
-    private Date BornDate;
-    private String Gender;
-    private String Country;
+    private Long id;
+    @Column(unique = true)
+    private String name;
+    private Date bornDate;
+    private String gender;
+    private String country;
     private String biography;
 
-//    @JoinColumn(name = "genre_id")
+    @ManyToMany(cascade = { CascadeType.MERGE, CascadeType.PERSIST })
+    @JoinTable(
+            name = "artists_languages",
+            joinColumns = { @JoinColumn(name = "artist_id") },
+            inverseJoinColumns = { @JoinColumn(name = "language_id") })
+    private Set<Language> languages = new HashSet<>();
+
     @ManyToMany(cascade = { CascadeType.MERGE, CascadeType.PERSIST })
     @JoinTable(
             name = "artists_genres",
@@ -38,22 +45,29 @@ public class Artist {
             inverseJoinColumns = { @JoinColumn(name = "genre_id") })
     private Set<Genre> genres = new HashSet<>();
 
-
     public void addGenre(Genre genre) {
         this.genres.add(genre);
         genre.getArtists().add(this);
     }
-
     public void removeGenre(Genre genre) {
         this.genres.remove(genre);
         genre.getArtists().remove(this);
     }
 
+    public void addLanguage(Language language) {
+        this.languages.add(language);
+        language.getArtists().add(this);
+    }
+    public void removeLanguage(Language language) {
+        this.languages.remove(language);
+        language.getArtists().remove(this);
+    }
+
     public Artist(DtoCreateArtist dto){
-        this.Name = dto.Name();
-        this.BornDate = dto.BornDate();
-        this.Gender = dto.Gender();
-        this.Country = dto.Country();
+        this.name = dto.Name();
+        this.bornDate = dto.BornDate();
+        this.gender = dto.Gender();
+        this.country = dto.Country();
         this.biography = dto.Biography();
     }
 }

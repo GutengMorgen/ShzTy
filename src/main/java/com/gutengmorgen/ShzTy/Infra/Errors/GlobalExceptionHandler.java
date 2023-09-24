@@ -35,8 +35,14 @@ public class GlobalExceptionHandler {
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
-    public String handleSQLIntegrityConstraintViolationException(SQLIntegrityConstraintViolationException ex) {
+    @ExceptionHandler(LanguageNotFoundException.class)
+    public String handleLanguageNotFoundException(LanguageNotFoundException ex) {
+        return ex.getMessage();
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(DuplicateArtistException.class)
+    public String handleDuplicateArtistException(DuplicateArtistException ex) {
         return ex.getMessage();
     }
 }

@@ -20,9 +20,7 @@ public class Genre {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_genres")
-    private Long Id;
-
-//    @Column(name = "name", nullable = false)
+    private Long id;
     private String name;
 
     @ManyToMany(mappedBy = "genres")
