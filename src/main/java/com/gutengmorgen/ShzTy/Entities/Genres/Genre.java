@@ -3,6 +3,7 @@ package com.gutengmorgen.ShzTy.Entities.Genres;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.gutengmorgen.ShzTy.Entities.Albums.Album;
 import com.gutengmorgen.ShzTy.Entities.Artists.Artist;
+import com.gutengmorgen.ShzTy.Entities.Tracks.Track;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -31,4 +32,8 @@ public class Genre {
     @ManyToMany(mappedBy = "Album_genres")
     @JsonIgnore
     private Set<Album> albums;
+
+    @ManyToMany(mappedBy = "Track_genres")
+    @JsonIgnore
+    private Set<Track> tracks;
 }
