@@ -16,6 +16,5 @@ public record DtoCreateArtist(
         String Biography,
         Set<Long> LanguageIDs,
         Set<Long> GenreIDs
-        //agregar los dto para retornar el numero de canciones y todos los albums
 ) {
 }

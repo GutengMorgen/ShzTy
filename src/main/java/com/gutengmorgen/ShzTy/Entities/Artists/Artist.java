@@ -1,5 +1,6 @@
 package com.gutengmorgen.ShzTy.Entities.Artists;
 
+import com.gutengmorgen.ShzTy.Entities.Albums.Album;
 import com.gutengmorgen.ShzTy.Entities.Artists.DtoArtists.DtoCreateArtist;
 import com.gutengmorgen.ShzTy.Entities.Genres.Genre;
 import com.gutengmorgen.ShzTy.Entities.Languages.Language;
@@ -32,18 +33,15 @@ public class Artist {
     private String biography;
 
     @ManyToMany(cascade = { CascadeType.MERGE, CascadeType.PERSIST })
-    @JoinTable(
-            name = "artists_languages",
-            joinColumns = { @JoinColumn(name = "artist_id") },
-            inverseJoinColumns = { @JoinColumn(name = "language_id") })
+    @JoinTable(name = "artists_languages", joinColumns = @JoinColumn(name = "artist_id"), inverseJoinColumns = @JoinColumn(name = "language_id"))
     private Set<Language> languages = new HashSet<>();
 
     @ManyToMany(cascade = { CascadeType.MERGE, CascadeType.PERSIST })
-    @JoinTable(
-            name = "artists_genres",
-            joinColumns = { @JoinColumn(name = "artist_id") },
-            inverseJoinColumns = { @JoinColumn(name = "genre_id") })
+    @JoinTable(name = "artists_genres", joinColumns = @JoinColumn(name = "artist_id"), inverseJoinColumns = @JoinColumn(name = "genre_id"))
     private Set<Genre> genres = new HashSet<>();
+
+    @OneToMany(mappedBy = "artist")
+    private Set<Album> albums;
 
     public void addGenre(Genre genre) {
         this.genres.add(genre);
