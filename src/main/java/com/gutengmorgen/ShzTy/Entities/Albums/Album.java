@@ -1,10 +1,12 @@
 package com.gutengmorgen.ShzTy.Entities.Albums;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.gutengmorgen.ShzTy.Entities.AlbumFormats.AlbumFormat;
 import com.gutengmorgen.ShzTy.Entities.Albums.DtoAlbums.DtoCreateAlbum;
 import com.gutengmorgen.ShzTy.Entities.Artists.Artist;
 import com.gutengmorgen.ShzTy.Entities.Genres.Genre;
+import com.gutengmorgen.ShzTy.Entities.Tracks.Track;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -36,8 +38,8 @@ public class Album {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_album_formats")
-    @JsonIgnore
-    private AlbumFormat format;
+    @JsonBackReference
+    private AlbumFormat albumFormat;
 
     @ManyToMany(cascade = { CascadeType.MERGE, CascadeType.PERSIST })
     @JoinTable(
@@ -45,6 +47,10 @@ public class Album {
             joinColumns = { @JoinColumn(name = "album_id") },
             inverseJoinColumns = { @JoinColumn(name = "genre_id") })
     private Set<Genre> Album_genres = new HashSet<>();
+
+    @OneToMany(mappedBy = "trackAlbum")
+    @JsonIgnore
+    private Set<Track> tracks;
 
     public void addGenre(Genre genre) {
         this.Album_genres.add(genre);

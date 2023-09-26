@@ -1,5 +1,7 @@
 package com.gutengmorgen.ShzTy.Entities.AlbumFormats;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.gutengmorgen.ShzTy.Entities.Albums.Album;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -22,6 +24,7 @@ public class AlbumFormat {
     private Long id;
     private String name;
 
-    @OneToMany(mappedBy = "format")
+    @OneToMany(mappedBy = "albumFormat")
+    @JsonManagedReference
     private Set<Album> albums;
 }

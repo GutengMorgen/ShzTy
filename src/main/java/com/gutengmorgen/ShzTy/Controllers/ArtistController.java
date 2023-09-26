@@ -4,6 +4,7 @@ import com.gutengmorgen.ShzTy.Entities.Artists.Artist;
 import com.gutengmorgen.ShzTy.Entities.Artists.ArtistServices;
 import com.gutengmorgen.ShzTy.Entities.Artists.DtoArtists.DtoCreateArtist;
 import com.gutengmorgen.ShzTy.Entities.Artists.DtoArtists.DtoReturnArtist;
+import com.gutengmorgen.ShzTy.Entities.Artists.DtoArtists.DtoUpdateArtist;
 import jakarta.validation.Valid;
 import jakarta.websocket.server.PathParam;
 import org.springframework.http.HttpStatus;
@@ -25,35 +26,31 @@ public class ArtistController {
     @GetMapping
     public ResponseEntity<Iterable<DtoReturnArtist>> list() {
         List<DtoReturnArtist> dtoReturnArtists = services.getAllArtists();
-//        return new ResponseEntity<>(artistList, HttpStatus.OK);
         return ResponseEntity.ok(dtoReturnArtists);
     }
 
     @GetMapping(path = "/{id}")
     public ResponseEntity<DtoReturnArtist> findById(@PathVariable Long id) {
         DtoReturnArtist artist = services.getArtistById(id);
-
-        if(artist == null){
-            String errorMessage = String.format("Item not found with ID: %d", id);
-            return ResponseEntity.notFound().header("Error", errorMessage).build();
-        }
         return ResponseEntity.ok(artist);
     }
 
     @PostMapping
     public ResponseEntity<Artist> create(@Valid @RequestBody DtoCreateArtist dtoCreateArtist) {
         Artist addedArtist = services.addArtist(dtoCreateArtist);
-        return new ResponseEntity<>(addedArtist, HttpStatus.CREATED);
 //        return ResponseEntity.created(null).body(addedArtist);
+        return new ResponseEntity<>(addedArtist, HttpStatus.CREATED);
     }
 
     @PutMapping(path = "/{id}")
-    public String update() {
-        return "Artist";
+    public ResponseEntity<DtoReturnArtist> update(@PathVariable Long id,
+                                  @Valid @RequestBody DtoUpdateArtist dtoUpdateArtist) {
+        DtoReturnArtist dtoReturnArtist = services.updateArtist(id, dtoUpdateArtist);
+        return ResponseEntity.ok(dtoReturnArtist);
     }
 
     @DeleteMapping(path = "/{id}")
-    public String delete() {
-        return "Artist";
+    public String delete(@PathVariable Long id) {
+        return services.deleteArtist(id);
     }
 }

@@ -2,6 +2,7 @@ package com.gutengmorgen.ShzTy.Entities.Albums;
 
 import com.gutengmorgen.ShzTy.Entities.AlbumFormats.AlbumFormat;
 import com.gutengmorgen.ShzTy.Entities.Albums.DtoAlbums.DtoCreateAlbum;
+import com.gutengmorgen.ShzTy.Entities.Albums.DtoAlbums.DtoReturnAlbum;
 import com.gutengmorgen.ShzTy.Entities.Artists.Artist;
 import com.gutengmorgen.ShzTy.Entities.Genres.Genre;
 import com.gutengmorgen.ShzTy.Infra.Errors.GenreNotFoundException;
@@ -13,6 +14,7 @@ import jakarta.annotation.Resource;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -46,7 +48,7 @@ public class AlbumServicesImpl implements AlbumServices {
         associateGenres(dto.genresId(), album);
 
         album.setArtist(artist.get());
-        album.setFormat(albumFormat.get());
+        album.setAlbumFormat(albumFormat.get());
         albumRepository.save(album);
         return album;
     }
@@ -67,8 +69,9 @@ public class AlbumServicesImpl implements AlbumServices {
     }
 
     @Override
-    public Iterable<Album> getAllAlbums() {
-        return null;
+    public List<DtoReturnAlbum> getAllAlbums() {
+        return albumRepository.findAll().stream().map(DtoReturnAlbum::new).toList();
+//        return albumRepository.findAll();
     }
 
     private void associateGenres(Set<Long> genreIDs, Album album) {

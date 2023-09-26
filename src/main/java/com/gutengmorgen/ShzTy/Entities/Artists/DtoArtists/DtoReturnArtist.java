@@ -17,12 +17,12 @@ public record DtoReturnArtist(
         String Biography,
         Set<Language> LanguageIDs,
         Set<Genre> GenreIDs,
-        Long CountTracks,
-        Long CountAlbums,
+        int CountTracks,
+        int CountAlbums,
         Set<Album> Albums
 ) {
 
-    public static DtoReturnArtist testing(Artist artist, Long countAlbums){
+    public static DtoReturnArtist testing(Artist artist, int countTracks, int countAlbums){
         return new DtoReturnArtist(
                 artist.getName(),
                 artist.getBornDate(),
@@ -30,8 +30,8 @@ public record DtoReturnArtist(
                 artist.getCountry(),
                 artist.getBiography(),
                 Set.of(),
-                Set.of(),
-                0L,
+                artist.getGenres(),
+                countTracks,
                 countAlbums,
                 artist.getAlbums()
         );

@@ -26,7 +26,7 @@ public record DtoReturnTrack(
                 track.getPlayTime(),
                 track.getNotes(),
                 track.getTrack_genres(),
-                track.getAlbum(),
+                track.getTrackAlbum(),
                 track.getPlayList()
         );
     }

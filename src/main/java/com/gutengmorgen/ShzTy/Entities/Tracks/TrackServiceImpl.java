@@ -1,7 +1,6 @@
 package com.gutengmorgen.ShzTy.Entities.Tracks;
 
 import com.gutengmorgen.ShzTy.Entities.Albums.Album;
-import com.gutengmorgen.ShzTy.Entities.Artists.Artist;
 import com.gutengmorgen.ShzTy.Entities.Genres.Genre;
 import com.gutengmorgen.ShzTy.Entities.PlayLists.PlayList;
 import com.gutengmorgen.ShzTy.Entities.Tracks.DtoTracks.DtoCreateTrack;
@@ -46,7 +45,7 @@ public class TrackServiceImpl implements TrackServices{
             throw new IllegalArgumentException("PlayList not found");
         }
 
-        track.setAlbum(album.get());
+        track.setTrackAlbum(album.get());
         track.setPlayList(playList.get());
         trackRepository.save(track);
         return track;

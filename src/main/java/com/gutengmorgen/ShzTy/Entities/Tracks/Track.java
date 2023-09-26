@@ -36,7 +36,7 @@ public class Track {
 
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "id_albums")
-    private Album album;
+    private Album trackAlbum;
 
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "id_playlists")

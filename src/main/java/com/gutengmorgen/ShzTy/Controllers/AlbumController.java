@@ -2,12 +2,13 @@ package com.gutengmorgen.ShzTy.Controllers;
 
 import com.gutengmorgen.ShzTy.Entities.Albums.Album;
 import com.gutengmorgen.ShzTy.Entities.Albums.AlbumServices;
-import com.gutengmorgen.ShzTy.Entities.Albums.AlbumServicesImpl;
 import com.gutengmorgen.ShzTy.Entities.Albums.DtoAlbums.DtoCreateAlbum;
-import com.gutengmorgen.ShzTy.Repositories.AlbumRepo;
+import com.gutengmorgen.ShzTy.Entities.Albums.DtoAlbums.DtoReturnAlbum;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("shzty/albums")
@@ -20,8 +21,9 @@ public class AlbumController {
     }
 
     @GetMapping
-    public String list() {
-        return "List of albums";
+    public ResponseEntity<Iterable<?>> list() {
+        List<DtoReturnAlbum> dtoReturnAlbums = services.getAllAlbums();
+        return ResponseEntity.ok(dtoReturnAlbums);
     }
 
     @PutMapping
