@@ -25,6 +25,6 @@ public class AlbumFormat {
     private String name;
 
     @OneToMany(mappedBy = "albumFormat")
-    @JsonManagedReference
+    @JsonIgnore
     private Set<Album> albums;
 }

@@ -7,6 +7,7 @@ import com.gutengmorgen.ShzTy.Entities.Tracks.Track;
 
 import java.sql.Date;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public record DtoReturnTrack(
         String title,
@@ -14,9 +15,9 @@ public record DtoReturnTrack(
         int playTime,
 //        String url,
         String notes,
-        Set<Genre> genreIDs,
-        Album album,
-        PlayList playList
+        Set<String> genresName,
+        String albumTitle,
+        String playListTitle
 ) {
 
     public DtoReturnTrack(Track track){
@@ -25,9 +26,34 @@ public record DtoReturnTrack(
                 track.getReleaseDate(),
                 track.getPlayTime(),
                 track.getNotes(),
-                track.getTrack_genres(),
-                track.getTrackAlbum(),
-                track.getPlayList()
+                track.getTrack_genres().stream().map(Genre::getName).collect(Collectors.toSet()),
+                track.getTrackAlbum().getTitle(),
+                track.getPlayList().getTile()
         );
     }
+
+//    public static DtoReturnTrack simple(Track track){
+//        return new DtoReturnTrack(
+//                track.getTitle(),
+//                track.getReleaseDate(),
+//                track.getPlayTime(),
+//                track.getTrack_genres().stream().map(Genre::getName).collect(Collectors.toSet()),
+//                track.getPlayList().getTile()
+//        );
+//    }
+
+
+//    public static DtoReturnTrack simple(Track track){
+//        return new DtoReturnTrack(
+//                track.getTitle(),
+//                track.getReleaseDate(),
+//                track.getPlayTime(),
+//                track.getNotes(),
+//                track.getTrack_genres().stream().map(Genre::getName).collect(Collectors.toSet()),
+//                track.getTrackAlbum().getTitle(),
+//                track.getPlayList().getTile(),
+//                track.getCredits(),
+//                track.getReview()
+//        );
+//    }
 }

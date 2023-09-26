@@ -1,8 +1,9 @@
 package com.gutengmorgen.ShzTy.Entities.Albums.DtoAlbums;
 
-import com.gutengmorgen.ShzTy.Entities.AlbumFormats.AlbumFormat;
 import com.gutengmorgen.ShzTy.Entities.Albums.Album;
 import com.gutengmorgen.ShzTy.Entities.Genres.Genre;
+import com.gutengmorgen.ShzTy.Entities.Tracks.DtoTracks.DtoReturnSimpleTrack;
+import com.gutengmorgen.ShzTy.Entities.Tracks.DtoTracks.DtoReturnTrack;
 import com.gutengmorgen.ShzTy.Entities.Tracks.Track;
 
 import java.sql.Date;
@@ -14,7 +15,7 @@ public record DtoReturnAlbum(
         Date releaseDate,
         String albumFormat,
         Set<String> genres,
-        Set<Track> tracks
+        Set<DtoReturnSimpleTrack> tracks
 ) {
 
     public DtoReturnAlbum(Album album) {
@@ -23,11 +24,11 @@ public record DtoReturnAlbum(
                 album.getReleaseDate(),
                 album.getAlbumFormat().getName(),
                 album.getAlbum_genres().stream().map(Genre::getName).collect(Collectors.toSet()),
-                album.getTracks()
+                album.getTracks().stream().map(DtoReturnSimpleTrack::new).collect(Collectors.toSet())
         );
     }
 
-    public static DtoReturnAlbum simple(Album album) {
+    public static DtoReturnAlbum without_Tracks(Album album) {
         return new DtoReturnAlbum(
                 album.getTitle(),
                 album.getReleaseDate(),

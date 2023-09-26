@@ -33,7 +33,7 @@ public record DtoReturnArtist(
                 countAlbums,
                 artist.getLanguages().stream().map(Language::getName).collect(Collectors.toSet()),
                 artist.getGenres().stream().map(Genre::getName).collect(Collectors.toSet()),
-                artist.getAlbums().stream().map(DtoReturnAlbum::simple).collect(Collectors.toSet())
+                artist.getAlbums().stream().map(DtoReturnAlbum::without_Tracks).collect(Collectors.toSet())
         );
     }
 }

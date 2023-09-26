@@ -10,7 +10,9 @@ import jakarta.websocket.server.PathParam;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -24,7 +26,7 @@ public class ArtistController {
     }
 
     @GetMapping
-    public ResponseEntity<Iterable<DtoReturnArtist>> list() {
+    public ResponseEntity<List<DtoReturnArtist>> list() {
         List<DtoReturnArtist> dtoReturnArtists = services.getAllArtists();
         return ResponseEntity.ok(dtoReturnArtists);
     }
@@ -38,8 +40,14 @@ public class ArtistController {
     @PostMapping
     public ResponseEntity<Artist> create(@Valid @RequestBody DtoCreateArtist dtoCreateArtist) {
         Artist addedArtist = services.addArtist(dtoCreateArtist);
-//        return ResponseEntity.created(null).body(addedArtist);
-        return new ResponseEntity<>(addedArtist, HttpStatus.CREATED);
+
+//        URI location = URI.create("/shzty/artists/" + addedArtist.getId());
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest().path("/{id}")
+                .buildAndExpand(addedArtist.getId()).toUri();
+
+//        return new ResponseEntity<>(addedArtist, HttpStatus.CREATED);
+        return ResponseEntity.created(location).body(addedArtist);
     }
 
     @PutMapping(path = "/{id}")
@@ -47,10 +55,5 @@ public class ArtistController {
                                   @Valid @RequestBody DtoUpdateArtist dtoUpdateArtist) {
         DtoReturnArtist dtoReturnArtist = services.updateArtist(id, dtoUpdateArtist);
         return ResponseEntity.ok(dtoReturnArtist);
-    }
-
-    @DeleteMapping(path = "/{id}")
-    public String delete(@PathVariable Long id) {
-        return services.deleteArtist(id);
     }
 }

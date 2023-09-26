@@ -3,6 +3,7 @@ package com.gutengmorgen.ShzTy.Entities.Albums;
 import com.gutengmorgen.ShzTy.Entities.AlbumFormats.AlbumFormat;
 import com.gutengmorgen.ShzTy.Entities.Albums.DtoAlbums.DtoCreateAlbum;
 import com.gutengmorgen.ShzTy.Entities.Albums.DtoAlbums.DtoReturnAlbum;
+import com.gutengmorgen.ShzTy.Entities.Albums.DtoAlbums.DtoUpdateAlbum;
 import com.gutengmorgen.ShzTy.Entities.Artists.Artist;
 import com.gutengmorgen.ShzTy.Entities.Genres.Genre;
 import com.gutengmorgen.ShzTy.Infra.Errors.GenreNotFoundException;
@@ -11,6 +12,7 @@ import com.gutengmorgen.ShzTy.Repositories.AlbumRepo;
 import com.gutengmorgen.ShzTy.Repositories.ArtistRepo;
 import com.gutengmorgen.ShzTy.Repositories.GenreRepo;
 import jakarta.annotation.Resource;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -35,32 +37,55 @@ public class AlbumServicesImpl implements AlbumServices {
     public Album addAlbum(DtoCreateAlbum dto) {
         Album album = new Album(dto);
 
-        Optional<Artist> artist = artistRepository.findById(dto.artistId());
-        if (artist.isEmpty()) {
-            throw new IllegalArgumentException("Artist not found");
-        }
+        Artist artist = artistRepository.findById(dto.artistId())
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Artist with id %d not found", dto.artistId())));
 
-        Optional<AlbumFormat> albumFormat = albumFormatRepository.findById(dto.albumFormatId());
-        if (albumFormat.isEmpty()) {
-            throw new IllegalArgumentException("albumFormat not found");
-        }
+        AlbumFormat albumFormat = albumFormatRepository.findById(dto.albumFormatId())
+                .orElseThrow(() -> new EntityNotFoundException(String.format("AlbumFormat with id %d not found", dto.albumFormatId())));
 
         associateGenres(dto.genresId(), album);
 
-        album.setArtist(artist.get());
-        album.setAlbumFormat(albumFormat.get());
+        album.setArtist(artist);
+        album.setAlbumFormat(albumFormat);
         albumRepository.save(album);
         return album;
     }
 
     @Override
-    public Album getAlbum(Long id) {
-        return null;
+    public DtoReturnAlbum getAlbum(Long id) {
+        Album  album = albumRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Album with id %d not found", id)));
+
+        return new DtoReturnAlbum(album);
     }
 
+    @Transactional(rollbackOn = Exception.class)
     @Override
-    public Album updateAlbum(Album album) {
-        return null;
+    public Album updateAlbum(Long id, DtoUpdateAlbum dto) {
+        Album album = albumRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Album with id %d not found", id)));
+
+        if(dto.getArtistId() != null){
+            Artist artist = artistRepository.findById(dto.getArtistId())
+                    .orElseThrow(() -> new EntityNotFoundException(String.format("Artist with id %d not found", dto.getArtistId())));
+
+            album.setArtist(artist);
+        }
+
+        if(dto.getAlbumFormatId() != null) {
+            AlbumFormat albumFormat = albumFormatRepository.findById(dto.getAlbumFormatId())
+                    .orElseThrow(() -> new EntityNotFoundException(String.format("AlbumFormat with id %d not found", dto.getAlbumFormatId())));
+
+            album.setAlbumFormat(albumFormat);
+        }
+
+        if(dto.getGenresId() != null) {
+            associateGenres(dto.getGenresId(), album);
+        }
+
+        album.update(dto);
+        albumRepository.save(album);
+        return album;
     }
 
     @Override
@@ -71,7 +96,6 @@ public class AlbumServicesImpl implements AlbumServices {
     @Override
     public List<DtoReturnAlbum> getAllAlbums() {
         return albumRepository.findAll().stream().map(DtoReturnAlbum::new).toList();
-//        return albumRepository.findAll();
     }
 
     private void associateGenres(Set<Long> genreIDs, Album album) {

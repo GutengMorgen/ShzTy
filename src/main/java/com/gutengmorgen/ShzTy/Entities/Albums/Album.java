@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.gutengmorgen.ShzTy.Entities.AlbumFormats.AlbumFormat;
 import com.gutengmorgen.ShzTy.Entities.Albums.DtoAlbums.DtoCreateAlbum;
+import com.gutengmorgen.ShzTy.Entities.Albums.DtoAlbums.DtoUpdateAlbum;
 import com.gutengmorgen.ShzTy.Entities.Artists.Artist;
 import com.gutengmorgen.ShzTy.Entities.Genres.Genre;
 import com.gutengmorgen.ShzTy.Entities.Tracks.Track;
@@ -36,9 +37,8 @@ public class Album {
     @JsonIgnore
     private Artist artist;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "id_album_formats")
-    @JsonBackReference
     private AlbumFormat albumFormat;
 
     @ManyToMany(cascade = { CascadeType.MERGE, CascadeType.PERSIST })
@@ -64,5 +64,10 @@ public class Album {
     public Album(DtoCreateAlbum dto){
         this.title = dto.title();
         this.releaseDate = dto.releaseDate();
+    }
+
+    public void update(DtoUpdateAlbum dtoUpdateAlbum) {
+        if(dtoUpdateAlbum.getTitle() != null) this.title = dtoUpdateAlbum.getTitle();
+        if(dtoUpdateAlbum.getReleaseDate() != null) this.releaseDate = dtoUpdateAlbum.getReleaseDate();
     }
 }
