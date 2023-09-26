@@ -7,13 +7,13 @@ import com.gutengmorgen.ShzTy.Entities.Tracks.Track;
 
 import java.sql.Date;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public record DtoReturnAlbum(
         String title,
         Date releaseDate,
-        Long artistId,
         String albumFormat,
-        Set<Genre> genres,
+        Set<String> genres,
         Set<Track> tracks
 ) {
 
@@ -21,10 +21,19 @@ public record DtoReturnAlbum(
         this(
                 album.getTitle(),
                 album.getReleaseDate(),
-                album.getArtist().getId(),
                 album.getAlbumFormat().getName(),
-                album.getAlbum_genres(),
+                album.getAlbum_genres().stream().map(Genre::getName).collect(Collectors.toSet()),
                 album.getTracks()
+        );
+    }
+
+    public static DtoReturnAlbum simple(Album album) {
+        return new DtoReturnAlbum(
+                album.getTitle(),
+                album.getReleaseDate(),
+                album.getAlbumFormat().getName(),
+                album.getAlbum_genres().stream().map(Genre::getName).collect(Collectors.toSet()),
+                Set.of()
         );
     }
 }

@@ -66,6 +66,11 @@ public class Artist {
         this.languages.remove(language);
         language.getArtists().remove(this);
     }
+    public void removeLanguages() {
+        for (Language language : new HashSet<>(languages)) {
+            removeLanguage(language);
+        }
+    }
 
     public Artist(DtoCreateArtist dto){
         this.name = dto.Name();
@@ -81,11 +86,5 @@ public class Artist {
         if(dto.Gender() != null) this.gender = dto.Gender();
         if(dto.Country() != null) this.country = dto.Country();
         if(dto.Biography() != null) this.biography = dto.Biography();
-    }
-
-    public void removeLanguages() {
-        for (Language language : new HashSet<>(languages)) {
-            removeLanguage(language);
-        }
     }
 }

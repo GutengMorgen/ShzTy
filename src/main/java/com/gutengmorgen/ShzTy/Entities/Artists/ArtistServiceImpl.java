@@ -1,15 +1,11 @@
 package com.gutengmorgen.ShzTy.Entities.Artists;
 
-import com.gutengmorgen.ShzTy.Entities.Albums.Album;
 import com.gutengmorgen.ShzTy.Entities.Artists.DtoArtists.DtoCreateArtist;
 import com.gutengmorgen.ShzTy.Entities.Artists.DtoArtists.DtoReturnArtist;
 import com.gutengmorgen.ShzTy.Entities.Artists.DtoArtists.DtoUpdateArtist;
 import com.gutengmorgen.ShzTy.Entities.Genres.Genre;
 import com.gutengmorgen.ShzTy.Entities.Languages.Language;
 import com.gutengmorgen.ShzTy.Infra.Errors.DuplicateArtistException;
-import com.gutengmorgen.ShzTy.Infra.Errors.GenreNotFoundException;
-import com.gutengmorgen.ShzTy.Infra.Errors.LanguageNotFoundException;
-import com.gutengmorgen.ShzTy.Repositories.AlbumRepo;
 import com.gutengmorgen.ShzTy.Repositories.ArtistRepo;
 import com.gutengmorgen.ShzTy.Repositories.GenreRepo;
 import com.gutengmorgen.ShzTy.Repositories.LanguageRepo;
@@ -18,7 +14,6 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.parser.Entity;
 import java.util.List;
 import java.util.Set;
 
@@ -49,7 +44,7 @@ public class ArtistServiceImpl implements ArtistServices{
             int countTracks = 0;
             int countAlbums = artist.getAlbums().size();
 //            Long countAlbumss = albumRepository.countByArtist(artist);
-            return DtoReturnArtist.testing(artist, countTracks, countAlbums);
+            return DtoReturnArtist.simple(artist, countTracks, countAlbums);
         }).toList();
     }
 
@@ -58,7 +53,7 @@ public class ArtistServiceImpl implements ArtistServices{
         Artist artist = artistRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException(String.format("Artist with id %d not found", id)));
 
-        return DtoReturnArtist.testing(artist, 0, artist.getAlbums().size());
+        return DtoReturnArtist.simple(artist, 0, artist.getAlbums().size());
     }
 
     @Transactional(rollbackOn = Exception.class)
@@ -80,7 +75,7 @@ public class ArtistServiceImpl implements ArtistServices{
         }
 
         artistRepository.save(artist);
-        return DtoReturnArtist.testing(artist, 0, artist.getAlbums().size());
+        return DtoReturnArtist.simple(artist, 0, artist.getAlbums().size());
     }
 
     @Override
