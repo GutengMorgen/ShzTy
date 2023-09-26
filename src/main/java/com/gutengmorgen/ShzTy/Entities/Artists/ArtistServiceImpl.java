@@ -1,5 +1,7 @@
 package com.gutengmorgen.ShzTy.Entities.Artists;
 
+import com.gutengmorgen.ShzTy.Entities.Albums.AlbumServicesImpl;
+import com.gutengmorgen.ShzTy.Entities.Albums.DtoAlbums.DtoReturnSimpleAlbum;
 import com.gutengmorgen.ShzTy.Entities.Artists.DtoArtists.DtoCreateArtist;
 import com.gutengmorgen.ShzTy.Entities.Artists.DtoArtists.DtoReturnArtist;
 import com.gutengmorgen.ShzTy.Entities.Artists.DtoArtists.DtoUpdateArtist;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class ArtistServiceImpl implements ArtistServices{
@@ -24,6 +27,7 @@ public class ArtistServiceImpl implements ArtistServices{
     @Resource GenreRepo genreRepository;
     @Resource LanguageRepo languageRepository;
 //    @Resource  AlbumRepo albumRepository;
+    @Resource AlbumServicesImpl albumServices;
 
     @Transactional(rollbackOn = Exception.class)
     @Override
@@ -41,10 +45,7 @@ public class ArtistServiceImpl implements ArtistServices{
     @Override
     public List<DtoReturnArtist> getAllArtists() {
         return artistRepository.findAll().stream().map(artist -> {
-            int countTracks = 0;
-            int countAlbums = artist.getAlbums().size();
-//            Long countAlbumss = albumRepository.countByArtist(artist);
-            return DtoReturnArtist.simple(artist, countTracks, countAlbums);
+            return new DtoReturnArtist(artist, countAllTracks(artist), artist.getAlbums().size(), getAlbums(artist));
         }).toList();
     }
 
@@ -53,7 +54,7 @@ public class ArtistServiceImpl implements ArtistServices{
         Artist artist = artistRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException(String.format("Artist with id %d not found", id)));
 
-        return DtoReturnArtist.simple(artist, 0, artist.getAlbums().size());
+        return new DtoReturnArtist(artist, countAllTracks(artist), artist.getAlbums().size(), getAlbums(artist));
     }
 
     @Transactional(rollbackOn = Exception.class)
@@ -75,7 +76,7 @@ public class ArtistServiceImpl implements ArtistServices{
         }
 
         artistRepository.save(artist);
-        return DtoReturnArtist.simple(artist, 0, artist.getAlbums().size());
+        return new DtoReturnArtist(artist, countAllTracks(artist), artist.getAlbums().size(), getAlbums(artist));
     }
 
     @Override
@@ -87,6 +88,16 @@ public class ArtistServiceImpl implements ArtistServices{
         artistRepository.delete(artist);
         return String.format("Artist with id %d successfully deleted", id);
 
+    }
+
+    private Set<DtoReturnSimpleAlbum> getAlbums(Artist artist) {
+        return artist.getAlbums().stream().map(album -> {
+            return new DtoReturnSimpleAlbum(album, albumServices.playTime(album));
+        }).collect(Collectors.toSet());
+    }
+
+    private int countAllTracks(Artist artist){
+        return artist.getAlbums().stream().mapToInt(album -> album.getTracks().size()).sum();
     }
 
     private void ValidateArtistName(String name){
