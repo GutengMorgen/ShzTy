@@ -3,8 +3,6 @@ package com.gutengmorgen.ShzTy.Entities.Albums.DtoAlbums;
 import com.gutengmorgen.ShzTy.Entities.Albums.Album;
 import com.gutengmorgen.ShzTy.Entities.Genres.Genre;
 import com.gutengmorgen.ShzTy.Entities.Tracks.DtoTracks.DtoReturnSimpleTrack;
-import com.gutengmorgen.ShzTy.Entities.Tracks.DtoTracks.DtoReturnTrack;
-import com.gutengmorgen.ShzTy.Entities.Tracks.Track;
 
 import java.sql.Date;
 import java.util.Set;

@@ -1,6 +1,5 @@
 package com.gutengmorgen.ShzTy.Entities.Albums;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.gutengmorgen.ShzTy.Entities.AlbumFormats.AlbumFormat;
 import com.gutengmorgen.ShzTy.Entities.Albums.DtoAlbums.DtoCreateAlbum;
@@ -67,7 +66,7 @@ public class Album {
     }
 
     public void update(DtoUpdateAlbum dtoUpdateAlbum) {
-        if(dtoUpdateAlbum.getTitle() != null) this.title = dtoUpdateAlbum.getTitle();
-        if(dtoUpdateAlbum.getReleaseDate() != null) this.releaseDate = dtoUpdateAlbum.getReleaseDate();
+        if(dtoUpdateAlbum.title() != null) this.title = dtoUpdateAlbum.title();
+        if(dtoUpdateAlbum.releaseDate() != null) this.releaseDate = dtoUpdateAlbum.releaseDate();
     }
 }

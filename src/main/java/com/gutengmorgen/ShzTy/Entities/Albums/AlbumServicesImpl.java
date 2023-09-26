@@ -17,20 +17,15 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 @Service
 public class AlbumServicesImpl implements AlbumServices {
 
-    @Resource
-    private AlbumRepo albumRepository;
-    @Resource
-    private ArtistRepo artistRepository;
-    @Resource
-    private AlbumFormatRepo albumFormatRepository;
-    @Resource
-    private GenreRepo genreRepository;
+    @Resource AlbumRepo albumRepository;
+    @Resource ArtistRepo artistRepository;
+    @Resource AlbumFormatRepo albumFormatRepository;
+    @Resource GenreRepo genreRepository;
 
     @Transactional(rollbackOn = Exception.class)
     @Override
@@ -65,22 +60,22 @@ public class AlbumServicesImpl implements AlbumServices {
         Album album = albumRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Album with id %d not found", id)));
 
-        if(dto.getArtistId() != null){
-            Artist artist = artistRepository.findById(dto.getArtistId())
-                    .orElseThrow(() -> new EntityNotFoundException(String.format("Artist with id %d not found", dto.getArtistId())));
+        if(dto.artistId() != null){
+            Artist artist = artistRepository.findById(dto.artistId())
+                    .orElseThrow(() -> new EntityNotFoundException(String.format("Artist with id %d not found", dto.artistId())));
 
             album.setArtist(artist);
         }
 
-        if(dto.getAlbumFormatId() != null) {
-            AlbumFormat albumFormat = albumFormatRepository.findById(dto.getAlbumFormatId())
-                    .orElseThrow(() -> new EntityNotFoundException(String.format("AlbumFormat with id %d not found", dto.getAlbumFormatId())));
+        if(dto.albumFormatId() != null) {
+            AlbumFormat albumFormat = albumFormatRepository.findById(dto.albumFormatId())
+                    .orElseThrow(() -> new EntityNotFoundException(String.format("AlbumFormat with id %d not found", dto.albumFormatId())));
 
             album.setAlbumFormat(albumFormat);
         }
 
-        if(dto.getGenresId() != null) {
-            associateGenres(dto.getGenresId(), album);
+        if(dto.genresId() != null) {
+            associateGenres(dto.genresId(), album);
         }
 
         album.update(dto);
