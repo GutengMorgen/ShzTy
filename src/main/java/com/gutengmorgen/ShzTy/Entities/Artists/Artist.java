@@ -87,4 +87,20 @@ public class Artist {
         if(dto.Country() != null) this.country = dto.Country();
         if(dto.Biography() != null) this.biography = dto.Biography();
     }
+
+    /**
+     * Count all albums of an artist
+     * @return number of albums
+     */
+    public int albumsCount(){
+        return this.getAlbums().size();
+    }
+
+    /**
+     * Count all tracks of all albums of an artist
+     * @return number of tracks of all albums
+     */
+    public int tracksCount(){
+        return this.getAlbums().stream().mapToInt(Album::tracksCount).sum();
+    }
 }

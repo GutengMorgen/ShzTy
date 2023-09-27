@@ -1,7 +1,5 @@
 package com.gutengmorgen.ShzTy.Entities.Artists;
 
-import com.gutengmorgen.ShzTy.Entities.Albums.AlbumServicesImpl;
-import com.gutengmorgen.ShzTy.Entities.Albums.DtoAlbums.DtoReturnSimpleAlbum;
 import com.gutengmorgen.ShzTy.Entities.Artists.DtoArtists.DtoCreateArtist;
 import com.gutengmorgen.ShzTy.Entities.Artists.DtoArtists.DtoReturnArtist;
 import com.gutengmorgen.ShzTy.Entities.Artists.DtoArtists.DtoUpdateArtist;
@@ -11,23 +9,20 @@ import com.gutengmorgen.ShzTy.Infra.Errors.DuplicateArtistException;
 import com.gutengmorgen.ShzTy.Repositories.ArtistRepo;
 import com.gutengmorgen.ShzTy.Repositories.GenreRepo;
 import com.gutengmorgen.ShzTy.Repositories.LanguageRepo;
-import jakarta.annotation.Resource;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class ArtistServiceImpl implements ArtistServices{
 
-    @Resource ArtistRepo artistRepository;
-    @Resource GenreRepo genreRepository;
-    @Resource LanguageRepo languageRepository;
-//    @Resource  AlbumRepo albumRepository;
-    @Resource AlbumServicesImpl albumServices;
+    @Autowired ArtistRepo artistRepository;
+    @Autowired GenreRepo genreRepository;
+    @Autowired LanguageRepo languageRepository;
 
     @Transactional(rollbackOn = Exception.class)
     @Override
@@ -44,9 +39,7 @@ public class ArtistServiceImpl implements ArtistServices{
 
     @Override
     public List<DtoReturnArtist> getAllArtists() {
-        return artistRepository.findAll().stream().map(artist -> {
-            return new DtoReturnArtist(artist, countAllTracks(artist), artist.getAlbums().size(), getAlbums(artist));
-        }).toList();
+        return artistRepository.findAll().stream().map(DtoReturnArtist::new).toList();
     }
 
     @Override
@@ -54,16 +47,16 @@ public class ArtistServiceImpl implements ArtistServices{
         Artist artist = artistRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException(String.format("Artist with id %d not found", id)));
 
-        return new DtoReturnArtist(artist, countAllTracks(artist), artist.getAlbums().size(), getAlbums(artist));
+        return new DtoReturnArtist(artist);
     }
 
     @Transactional(rollbackOn = Exception.class)
     @Override
     public DtoReturnArtist updateArtist(Long id, DtoUpdateArtist dtoUpdateArtist) {
-        ValidateArtistName(dtoUpdateArtist.Name());
-        Artist artist = artistRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(String.format("Artist with id %d not found", id)));
+        Artist artist = artistRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException(String.format("Artist with id %d not found", id)));
 
+        ValidateArtistName(dtoUpdateArtist.Name());
         artist.update(dtoUpdateArtist);
 
         if(dtoUpdateArtist.LanguageIDs() != null){
@@ -76,9 +69,10 @@ public class ArtistServiceImpl implements ArtistServices{
         }
 
         artistRepository.save(artist);
-        return new DtoReturnArtist(artist, countAllTracks(artist), artist.getAlbums().size(), getAlbums(artist));
+        return new DtoReturnArtist(artist);
     }
 
+    @Transactional(rollbackOn = Exception.class)
     @Override
     public String deleteArtist(Long id) {
         Artist artist = artistRepository.findById(id).orElseThrow(
@@ -87,17 +81,6 @@ public class ArtistServiceImpl implements ArtistServices{
         artist.removeLanguages();
         artistRepository.delete(artist);
         return String.format("Artist with id %d successfully deleted", id);
-
-    }
-
-    private Set<DtoReturnSimpleAlbum> getAlbums(Artist artist) {
-        return artist.getAlbums().stream().map(album -> {
-            return new DtoReturnSimpleAlbum(album, albumServices.playTime(album));
-        }).collect(Collectors.toSet());
-    }
-
-    private int countAllTracks(Artist artist){
-        return artist.getAlbums().stream().mapToInt(album -> album.getTracks().size()).sum();
     }
 
     private void ValidateArtistName(String name){
@@ -107,8 +90,8 @@ public class ArtistServiceImpl implements ArtistServices{
 
     private void associateLanguages(Set<Long> languageIDs, Artist artist) {
         for (Long languageID : languageIDs) {
-            Language language = languageRepository.findById(languageID)
-                    .orElseThrow(() -> new EntityNotFoundException(String.format("Language with id %d not found", languageID)));
+            Language language = languageRepository.findById(languageID).orElseThrow(
+                    () -> new EntityNotFoundException(String.format("Language with id %d not found", languageID)));
             artist.addLanguage(language);
             language.getArtists().add(artist);
             languageRepository.save(language);
@@ -117,8 +100,8 @@ public class ArtistServiceImpl implements ArtistServices{
 
     private void associateGenres(Set<Long> genreIDs, Artist artist) {
         for (Long genreID : genreIDs) {
-            Genre genre = genreRepository.findById(genreID)
-                    .orElseThrow(() -> new EntityNotFoundException(String.format("Genre with id %d not found", genreID)));
+            Genre genre = genreRepository.findById(genreID).orElseThrow(
+                    () -> new EntityNotFoundException(String.format("Genre with id %d not found", genreID)));
             artist.addGenre(genre);
             genre.getArtists().add(artist);
             genreRepository.save(genre);

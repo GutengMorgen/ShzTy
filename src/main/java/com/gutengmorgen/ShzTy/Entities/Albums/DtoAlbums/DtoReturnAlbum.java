@@ -12,19 +12,19 @@ public record DtoReturnAlbum(
         String title,
         Date releaseDate,
         String albumFormat,
-        int countTracks,
+        int tracksCount,
         int playTime,
         Set<String> genres,
         Set<DtoReturnSimpleTrack> tracks
 ) {
 
-    public DtoReturnAlbum(Album album, int playTime) {
+    public DtoReturnAlbum(Album album) {
         this(
                 album.getTitle(),
                 album.getReleaseDate(),
                 album.getAlbumFormat().getName(),
-                album.getTracks().size(),
-                playTime,
+                album.tracksCount(),
+                album.playTime(),
                 album.getAlbum_genres().stream().map(Genre::getName).collect(Collectors.toSet()),
                 album.getTracks().stream().map(DtoReturnSimpleTrack::new).collect(Collectors.toSet())
         );

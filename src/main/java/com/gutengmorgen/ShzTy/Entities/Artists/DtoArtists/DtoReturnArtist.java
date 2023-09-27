@@ -1,6 +1,5 @@
 package com.gutengmorgen.ShzTy.Entities.Artists.DtoArtists;
 
-import com.gutengmorgen.ShzTy.Entities.Albums.DtoAlbums.DtoReturnAlbum;
 import com.gutengmorgen.ShzTy.Entities.Albums.DtoAlbums.DtoReturnSimpleAlbum;
 import com.gutengmorgen.ShzTy.Entities.Artists.Artist;
 import com.gutengmorgen.ShzTy.Entities.Genres.Genre;
@@ -16,25 +15,24 @@ public record DtoReturnArtist(
         String Gender,
         String Country,
         String Biography,
-        int CountTracks,
+        int TracksCount,
         int CountAlbums,
         Set<String> Languages,
         Set<String> Genres,
-        Set<DtoReturnSimpleAlbum> Albums
-) {
+        Set<DtoReturnSimpleAlbum> Albums) {
 
-    public DtoReturnArtist(Artist artist, int countTracks, int countAlbums, Set<DtoReturnSimpleAlbum> Albums){
+    public DtoReturnArtist(Artist artist){
         this(
                 artist.getName(),
                 artist.getBornDate(),
                 artist.getGender(),
                 artist.getCountry(),
                 artist.getBiography(),
-                countTracks,
-                countAlbums,
+                artist.tracksCount(),
+                artist.albumsCount(),
                 artist.getLanguages().stream().map(Language::getName).collect(Collectors.toSet()),
                 artist.getGenres().stream().map(Genre::getName).collect(Collectors.toSet()),
-                Albums
+                artist.getAlbums().stream().map(DtoReturnSimpleAlbum::new).collect(Collectors.toSet())
         );
     }
 }

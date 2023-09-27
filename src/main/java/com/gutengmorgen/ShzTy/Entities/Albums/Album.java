@@ -69,4 +69,20 @@ public class Album {
         if(dtoUpdateAlbum.title() != null) this.title = dtoUpdateAlbum.title();
         if(dtoUpdateAlbum.releaseDate() != null) this.releaseDate = dtoUpdateAlbum.releaseDate();
     }
+
+    /**
+     * sum of all tracks' play time on an album
+     * @return play time in seconds.
+     */
+    public int playTime(){
+        return this.getTracks().stream().mapToInt(Track::getPlayTime).sum();
+    }
+
+    /**
+     * count of all tracks on an album
+     * @return number of tracks
+     */
+    public int tracksCount(){
+        return this.getTracks().size();
+    }
 }

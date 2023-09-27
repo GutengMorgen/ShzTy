@@ -6,7 +6,6 @@ import com.gutengmorgen.ShzTy.Entities.Albums.DtoAlbums.DtoReturnAlbum;
 import com.gutengmorgen.ShzTy.Entities.Albums.DtoAlbums.DtoUpdateAlbum;
 import com.gutengmorgen.ShzTy.Entities.Artists.Artist;
 import com.gutengmorgen.ShzTy.Entities.Genres.Genre;
-import com.gutengmorgen.ShzTy.Entities.Tracks.Track;
 import com.gutengmorgen.ShzTy.Infra.Errors.GenreNotFoundException;
 import com.gutengmorgen.ShzTy.Repositories.*;
 import jakarta.annotation.Resource;
@@ -24,7 +23,6 @@ public class AlbumServicesImpl implements AlbumServices {
     @Resource ArtistRepo artistRepository;
     @Resource AlbumFormatRepo albumFormatRepository;
     @Resource GenreRepo genreRepository;
-    @Resource TrackRepo trackRepository;
 
     @Transactional(rollbackOn = Exception.class)
     @Override
@@ -47,7 +45,7 @@ public class AlbumServicesImpl implements AlbumServices {
 
     @Override
     public List<DtoReturnAlbum> getAllAlbums() {
-        return albumRepository.findAll().stream().map(album -> new DtoReturnAlbum(album, playTime(album))).toList();
+        return albumRepository.findAll().stream().map(DtoReturnAlbum::new).toList();
     }
 
     @Override
@@ -55,7 +53,7 @@ public class AlbumServicesImpl implements AlbumServices {
         Album  album = albumRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Album with id %d not found", id)));
 
-        return new DtoReturnAlbum(album, playTime(album));
+        return new DtoReturnAlbum(album);
     }
 
     @Transactional(rollbackOn = Exception.class)
@@ -90,14 +88,6 @@ public class AlbumServicesImpl implements AlbumServices {
     @Override
     public Album deleteAlbum(Long id) {
         return null;
-    }
-
-    public int playTime(Album album){
-        return album.getTracks().stream().mapToInt(Track::getPlayTime).sum();
-    }
-
-    public int countTracks(Album album){
-        return album.getTracks().size();
     }
 
     private void associateGenres(Set<Long> genreIDs, Album album) {
